@@ -6,17 +6,12 @@ var Controlador = function(modelo) {
 };
 
 Controlador.prototype = {
-  agregarPregunta: function() {
-    var value = $('#pregunta').val();
-    var respuestas = [];
+  agregarPregunta: function(pregunta, respuestas) {
+    this.modelo.agregarPregunta(pregunta, respuestas);
+  },
 
-    $('[name="option[]"]').each(function() {
-      var respuesta = $(this).val();
-      //Completar el agregado de una respuesta
-      // pusheandola al arreglo de respuestas
-      
-    })
-    this.modelo.agregarPregunta(value, respuestas);
+  borrarPregunta: function(id) {
+    this.modelo.borrarPregunta(id);
   },
 
   agregarVotos: function(){

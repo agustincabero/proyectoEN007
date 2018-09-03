@@ -28,6 +28,7 @@ VistaUsuario.prototype = {
   },
 
   //reconstruccion de los graficos de torta
+  //TODO desacoplar del modelo
   reconstruirGrafico: function(){
     var contexto = this;
     //obtiene las preguntas del local storage
@@ -42,7 +43,7 @@ VistaUsuario.prototype = {
     })
   },
 
-
+  //TODO desacoplar del modelo
   reconstruirLista: function() {
     var listaPreguntas = this.elementos.listaPreguntas;
     listaPreguntas.html('');
