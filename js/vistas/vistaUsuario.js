@@ -8,58 +8,64 @@ var VistaUsuario = function(modelo, controlador, elementos) {
   var contexto = this;
 
   //suscripcion a eventos del modelo
-  this.modelo.preguntaAgregada.suscribir(function() {
-    contexto.reconstruirLista();
+  this.modelo.preguntasModificadas.suscribir( function(modelo, preguntas) {
+    contexto.reconstruirLista(preguntas);
+    contexto.reconstruirGrafico(preguntas);
+  });
+  this.modelo.votoSumado.suscribir( function(modelo, preguntas) {
+    contexto.reconstruirGrafico(preguntas);
   });
 };
 
 VistaUsuario.prototype = {
   //muestra la lista por pantalla y agrega el manejo del boton agregar
   inicializar: function() {
-    this.reconstruirLista();
+    this.controlador.getPreguntas();
     var elementos = this.elementos;
     var contexto = this;
     
-    elementos.botonAgregar.click(function() {
-      contexto.controlador.agregarVotos();  
+    elementos.botonAgregar.click( function() {
+      var usuario = $('#nombreUsuario').val();
+      var inputRespuestas = $('input:checked');
+      var votos = [];
+      for (let i = 0; i < inputRespuestas.length; i++) {
+        var id = inputRespuestas[i].name;
+        var res = inputRespuestas[i].value;
+        var voto = {id: id, cantidadPorRespuesta: {textoRespuesta: res}};
+        votos.push(voto);        
+      };
+      contexto.controlador.agregarVotos(usuario, votos);  
     });
-      
-    this.reconstruirGrafico();
   },
 
   //reconstruccion de los graficos de torta
-  //TODO desacoplar del modelo
-  reconstruirGrafico: function(){
+  reconstruirGrafico: function(preguntas){
     var contexto = this;
-    //obtiene las preguntas del local storage
-    var preguntas = this.modelo.preguntas;
-    preguntas.forEach(function(clave){
+    preguntas.forEach( function(clave){
       var listaParaGrafico = [[clave.textoPregunta, 'Cantidad']];
       var respuestas = clave.cantidadPorRespuesta;
-      respuestas.forEach (function(elemento) {
+      respuestas.forEach ( function(elemento) {
         listaParaGrafico.push([elemento.textoRespuesta,elemento.cantidad]);
       });
       contexto.dibujarGrafico(clave.textoPregunta, listaParaGrafico);
     })
   },
 
-  //TODO desacoplar del modelo
-  reconstruirLista: function() {
+  //reconstruccion de la lista de preguntas disponibles
+  reconstruirLista: function(preguntas) {
     var listaPreguntas = this.elementos.listaPreguntas;
     listaPreguntas.html('');
     var contexto = this;
-    var preguntas = this.modelo.preguntas;
-    preguntas.forEach(function(clave){
-      //completar
-      //agregar a listaPreguntas un elemento div con valor "clave.textoPregunta", texto "clave.textoPregunta", id "clave.id"
+    preguntas.forEach( function(clave){
+      listaPreguntas.append(`<div id="${clave.id}" value="${clave.textoPregunta}">${clave.textoPregunta}</div>`);
       var respuestas = clave.cantidadPorRespuesta;
-      contexto.mostrarRespuestas(listaPreguntas,respuestas, clave);
+      contexto.mostrarRespuestas(listaPreguntas, respuestas, clave);
     })
   },
 
   //muestra respuestas
   mostrarRespuestas:function(listaPreguntas,respuestas, clave){
-    respuestas.forEach (function(elemento) {
+    respuestas.forEach ( function(elemento) {
       listaPreguntas.append($('<input>', {
         type: 'radio',
         value: elemento.textoRespuesta,

@@ -14,17 +14,23 @@ Controlador.prototype = {
     this.modelo.borrarPregunta(id);
   },
 
-  agregarVotos: function(){
-    var contexto = this;
-    $('#preguntas').find('div').each(function(){
-      var nombrePregunta = $(this).attr('value')
-      var id = $(this).attr('id')
-      var pregunta = contexto.modelo.obtenerPregunta(nombrePregunta);
-      var respuestaSeleccionada = $('input[name=' + id + ']:checked').val();
-      $('input[name=' + id + ']').prop('checked',false);
-      contexto.agregarVoto(pregunta,respuestaSeleccionada);
-    });
+  agregarVotos: function(usuario, votos) {
+    this.modelo.sumarVoto(usuario, votos);
   },
 
-  
+  editarPregunta: function(id, nuevoTextoPregunta) {
+    this.modelo.editarPregunta(id, nuevoTextoPregunta);
+  },
+
+  borrarTodo: function() {
+    this.modelo.borrarTodo();
+  },
+
+  getPreguntas: function() {
+    this.modelo.sendPreguntas();
+  },
+
+  getRespuestas: function() {
+    this.modelo.sendRespuestas();
+  }  
 };
